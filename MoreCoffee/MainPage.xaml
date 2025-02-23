@@ -30,12 +30,23 @@
             
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:Coffee">
-                    <Grid Padding="10" ColumnDefinitions="*, Auto" ColumnSpacing="15">
+                    <Grid Padding="10" ColumnDefinitions="*, Auto, Auto" ColumnSpacing="15">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer 
+                                Command="{Binding Path=EditCoffeeCommand, x:DataType=viewmodels:MainPageViewModel, Source={RelativeSource AncestorType={x:Type viewmodels:MainPageViewModel}}}"
+                                CommandParameter="{Binding .}"/>
+                        </Grid.GestureRecognizers>
                         <Label Text="{Binding Name}" 
                                VerticalOptions="Center"/>
                         <Label Text="{Binding Ounces, StringFormat='{0}oz'}"
                                Grid.Column="1"
                                VerticalOptions="Center"/>
+                        <Image Grid.Column="2"
+                               Source="chevronright.png"
+                               HeightRequest="16"
+                               WidthRequest="16"
+                               VerticalOptions="Center"
+                               HorizontalOptions="End"/>
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

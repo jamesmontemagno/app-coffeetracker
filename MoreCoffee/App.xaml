@@ -2,6 +2,7 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:MoreCoffee"
+             xmlns:converters="clr-namespace:MoreCoffee.Converters"
              x:Class="MoreCoffee.App">
     <Application.Resources>
         <ResourceDictionary>
@@ -9,6 +10,9 @@
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <converters:EnumToListConverter x:Key="EnumToList"/>
+            <converters:StringNotNullOrEmptyConverter x:Key="StringNotNullOrEmptyConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

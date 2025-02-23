@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MoreCoffee.Views.BagOfCoffeePage"
+             xmlns:viewmodel="clr-namespace:MoreCoffee.ViewModels"
+             xmlns:model="clr-namespace:MoreCoffee.Models"
+             x:DataType="viewmodel:BagOfCoffeeViewModel"
+             Title="Coffee Bags">
+    <ScrollView>
+        <VerticalStackLayout Spacing="10" Padding="20">
+            <Border Padding="10" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Add New Coffee Bag" FontSize="Large"/>
+                    <Entry Text="{Binding Roaster}" Placeholder="Roaster"/>
+                    <Entry Text="{Binding Name}" Placeholder="Coffee Name"/>
+                    <Entry Text="{Binding Origin}" Placeholder="Origin"/>
+                    <Editor Text="{Binding TastingNotes}" 
+                            Placeholder="Tasting Notes"
+                            AutoSize="TextChanges"
+                            MaxLength="500"/>
+                    <Label Text="Roast Date"/>
+                    <DatePicker Date="{Binding RoastDate}"/>
+                    <Label Text="Roast Level"/>
+                    <Picker SelectedItem="{Binding SelectedRoastLevel}"
+                            ItemsSource="{Binding RoastLevels}"/>
+                    <Button Text="Add Coffee Bag" 
+                            Command="{Binding AddCoffeeBagCommand}"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Text="Your Coffee Collection" FontSize="Large"/>
+            <CollectionView ItemsSource="{Binding CoffeeBags}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="model:BagOfCoffee">
+                        <SwipeView>
+                            <SwipeView.RightItems>
+                                <SwipeItems>
+                                    <SwipeItem Text="Delete"
+                                              Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:BagOfCoffeeViewModel}}, Path=DeleteCoffeeBagCommand}"
+                                              CommandParameter="{Binding}"
+                                              BackgroundColor="Red"/>
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+                            <Border Margin="0,5" Padding="10" StrokeShape="RoundRectangle 10">
+                                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
+                                    <Label Text="{Binding Name}" FontSize="Medium" FontAttributes="Bold"/>
+                                    <Label Text="{Binding Roaster}" Grid.Row="1"/>
+                                    <Label Text="{Binding Origin}" Grid.Row="2"/>
+                                    <Label Text="{Binding TastingNotes}" Grid.Row="3" 
+                                           LineBreakMode="WordWrap"
+                                           IsVisible="{Binding TastingNotes, Converter={StaticResource StringNotNullOrEmptyConverter}}"/>
+                                    <VerticalStackLayout Grid.Column="1" Grid.RowSpan="4">
+                                        <Label Text="{Binding RoastLevel}"/>
+                                        <Label Text="{Binding RoastDate, StringFormat='{0:d}'}"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+                        </SwipeView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -6,7 +6,8 @@ using System.Collections.ObjectModel;
 
 namespace MoreCoffee.ViewModels;
 
-public partial class MainPageViewModel : ObservableObject
+[QueryProperty(nameof(IsEdited), "IsEdited")]
+public partial class MainPageViewModel : ObservableObject, INavigationAwareAsync
 {
     private readonly CoffeeService _coffeeService;
 
@@ -25,11 +26,13 @@ public partial class MainPageViewModel : ObservableObject
     [ObservableProperty]
     private DateTime selectedDate = DateTime.Today;
 
+    [ObservableProperty]
+    private bool isEdited;
+
     public MainPageViewModel(CoffeeService coffeeService)
     {
         _coffeeService = coffeeService;
         CoffeeGroups = new ObservableCollection<CoffeeGroup>();
-        LoadCoffeesAsync().ConfigureAwait(false);
     }
 
     private async Task LoadCoffeesAsync()
@@ -82,16 +85,44 @@ public partial class MainPageViewModel : ObservableObject
         // Reload the list
         await LoadCoffeesAsync();
     }
+
+    [RelayCommand]
+    async Task EditCoffee(Coffee coffee)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "Coffee", coffee }
+        };
+        await Shell.Current.GoToAsync("EditCoffeePage", parameters);
+    }
+
+    public async Task OnNavigatedToAsync()
+    {
+        var shouldRefresh = IsEdited || CoffeeGroups.Count == 0;
+
+        if (shouldRefresh)
+        {
+            await LoadCoffeesAsync();
+            IsEdited = false;
+        }
+    }
+
+    public Task OnNavigatedFromAsync()
+    {
+        return Task.CompletedTask;
+    }
 }
 
 public class CoffeeGroup : ObservableCollection<Coffee>
 {
     public DateTime Date { get; }
-    public string DisplayDate => Date.ToString("D");
-    public double TotalOunces => this.Sum(c => c.Ounces);
+    public string DisplayDate { get; }
+    public double TotalOunces { get; }
 
     public CoffeeGroup(DateTime date, ObservableCollection<Coffee> coffees) : base(coffees)
     {
         Date = date;
+        DisplayDate = date.ToString("D");
+        TotalOunces = coffees.Sum(c => c.Ounces);
     }
 }

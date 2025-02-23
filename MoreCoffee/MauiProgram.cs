@@ -22,14 +22,19 @@ public static class MauiProgram
 
         // Services
         builder.Services.AddSingleton<CoffeeService>();
+        builder.Services.AddSingleton<BagOfCoffeeService>();
         
         // ViewModels
         builder.Services.AddSingleton<MainPageViewModel>();
         builder.Services.AddSingleton<StatisticsViewModel>();
+        builder.Services.AddTransient<EditCoffeeViewModel>();
+        builder.Services.AddSingleton<BagOfCoffeeViewModel>();
         
         // Pages
         builder.Services.AddSingleton<MainPage>();
         builder.Services.AddSingleton<StatisticsPage>();
+        builder.Services.AddTransient<EditCoffeePage>();
+        builder.Services.AddSingleton<BagOfCoffeePage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

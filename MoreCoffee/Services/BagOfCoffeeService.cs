@@ -3,18 +3,17 @@ using MoreCoffee.Models;
 
 namespace MoreCoffee.Services;
 
-public class CoffeeService
+public class BagOfCoffeeService
 {
     SQLiteAsyncConnection Database;
+    bool isInitialized;
+    SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
 
-    public CoffeeService()
+    public BagOfCoffeeService()
     {
         var databasePath = Path.Combine(FileSystem.AppDataDirectory, "coffee.db");
         Database = new SQLiteAsyncConnection(databasePath);
     }
-
-    bool isInitialized;
-    SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
 
     public async Task InitializeAsync()
     {
@@ -32,41 +31,37 @@ public class CoffeeService
             semaphoreSlim.Release();
         }
     }
+
     async Task Init()
     {
-        await Database.CreateTableAsync<Coffee>();
+        await Database.CreateTableAsync<BagOfCoffee>();
     }
 
-    public async Task<List<Coffee>> GetCoffeesAsync()
+    public async Task<List<BagOfCoffee>> GetBagsOfCoffeeAsync()
     {
         if (!isInitialized)
             await InitializeAsync();
-        return await Database.Table<Coffee>().OrderByDescending(c => c.DateAdded).ToListAsync();
+        return await Database.Table<BagOfCoffee>().OrderByDescending(c => c.DateAdded).ToListAsync();
     }
 
-    public async Task<int> AddCoffeeAsync(Coffee coffee)
+    public async Task<int> AddBagOfCoffeeAsync(BagOfCoffee coffee)
     {
         if (!isInitialized)
             await InitializeAsync();
         return await Database.InsertAsync(coffee);
     }
 
-    public async Task<int> UpdateCoffeeAsync(Coffee coffee)
+    public async Task<int> UpdateBagOfCoffeeAsync(BagOfCoffee coffee)
     {
         if (!isInitialized)
             await InitializeAsync();
         return await Database.UpdateAsync(coffee);
     }
 
-    public async Task<int> DeleteCoffeeAsync(Coffee coffee)
+    public async Task<int> DeleteBagOfCoffeeAsync(BagOfCoffee coffee)
     {
         if (!isInitialized)
             await InitializeAsync();
-
-        var existingCoffee = await Database.Table<Coffee>().Where(c => c.Id == coffee.Id).FirstOrDefaultAsync();
-        if (existingCoffee == null)
-            return 0;
-
         return await Database.DeleteAsync(coffee);
     }
 }

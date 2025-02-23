@@ -14,6 +14,11 @@
         Route="MainPage" />
 
     <ShellContent
+        Title="Coffee Bags"
+        ContentTemplate="{DataTemplate views:BagOfCoffeePage}"
+        Route="BagOfCoffeePage" />
+
+    <ShellContent
         Title="Statistics"
         ContentTemplate="{DataTemplate views:StatisticsPage}"
         Route="StatisticsPage" />

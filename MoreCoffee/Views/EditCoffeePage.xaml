@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MoreCoffee.Views.EditCoffeePage"
+             Title="Edit Coffee"
+             xmlns:vm="clr-namespace:MoreCoffee.ViewModels"
+             x:DataType="vm:EditCoffeeViewModel">
+
+    <ContentPage.Content>
+        <VerticalStackLayout Spacing="10" Padding="20">
+            <Label Text="Name:" />
+            <Entry Text="{Binding Coffee.Name}" />
+            
+            <Label Text="Ounces:" />
+            <Entry Text="{Binding Coffee.Ounces}" Keyboard="Numeric" />
+
+            <Button Text="Save" 
+                    Command="{Binding SaveCoffeeCommand}"
+                    HorizontalOptions="Center"
+                    Margin="0,20,0,0" />
+        </VerticalStackLayout>
+    </ContentPage.Content>
+</ContentPage>
