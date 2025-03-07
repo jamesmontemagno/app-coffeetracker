@@ -18,10 +18,14 @@ public partial class StatisticsViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<CoffeeDayData> chartData2;
 
+    [ObservableProperty]
+    public ObservableCollection<CoffeeDayData> chartData3 = new ObservableCollection<CoffeeDayData>();
+
     public StatisticsViewModel(CoffeeService coffeeService)
     {
         _coffeeService = coffeeService;
         ChartData = new ObservableCollection<CoffeeDayData>();
+        ChartData2 = new ObservableCollection<CoffeeDayData>();
     }
 
     public async void OnAppearing()
@@ -55,6 +59,16 @@ public partial class StatisticsViewModel : ObservableObject
         foreach (var data in groupedCoffeesByName)
             ChartData2.Add(data);
 
+
+        ChartData3.Clear();
+        var groupedCoffeesByName2 = coffees
+            .GroupBy(c => c.Name)
+            .OrderBy(g => g.Key)
+            .Select(g => new CoffeeDayData(DateTime.Today, g.Sum(c => c.Ounces)))
+            .ToList();
+
+        foreach (var data in groupedCoffeesByName2)
+            ChartData3.Add(data);
     }
 }
 

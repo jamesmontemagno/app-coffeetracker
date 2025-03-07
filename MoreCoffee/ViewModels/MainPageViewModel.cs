@@ -10,6 +10,18 @@ namespace MoreCoffee.ViewModels;
 public partial class MainPageViewModel : ObservableObject, INavigationAwareAsync
 {
     private readonly CoffeeService _coffeeService;
+    private readonly Random _random = new Random();
+    
+    private readonly string[] _coffeeCelebrations = new[]
+    {
+        "☕ Life happens, coffee helps!\nOne more delicious cup to brighten your day!",
+        "☕ Coffee: because adulting is hard!\nSip, savor, and conquer the day!",
+        "In the symphony of morning,\nCoffee plays the sweetest note.\nA melody of warmth and comfort,\nAs precious moments float.",
+        "☕ Dark as night, sweet as love,\nCoffee brings blessings from above!",
+        "Through steam and brew,\nMy heart beats true.\nAnother cup of joy,\nJust for you!",
+        "☕ Every cup of coffee is a hug for your brain!\nAnd you just added another one!",
+        "Coffee whispers softly,\nIn aromatic prose.\nAnother cup of heaven,\nAs your collection grows!"
+    };
 
     [ObservableProperty]
     private ObservableCollection<CoffeeGroup> coffeeGroups;
@@ -29,7 +41,7 @@ public partial class MainPageViewModel : ObservableObject, INavigationAwareAsync
     [ObservableProperty]
     private bool isEdited;
 
-    public MainPageViewModel(CoffeeService coffeeService)
+    public MainPageViewModel(CoffeeService coffeeService, SettingsService settingsService)
     {
         _coffeeService = coffeeService;
         CoffeeGroups = new ObservableCollection<CoffeeGroup>();
@@ -43,11 +55,11 @@ public partial class MainPageViewModel : ObservableObject, INavigationAwareAsync
         var groups = coffeeList
             .GroupBy(c => c.DateAdded.Date)
             .OrderByDescending(g => g.Key)
-            .Select(g => new CoffeeGroup(g.Key, [.. g]))
+            .Select(g => new CoffeeGroup(g.Key, g.ToList()))
             .ToList();
 
 
-        CoffeeGroups = [.. groups];
+        CoffeeGroups = new ObservableCollection<CoffeeGroup>(groups);
         OnPropertyChanged(nameof(CoffeeGroups));
 
 		var totalOunces = coffeeList.Sum(c => c.Ounces);
@@ -78,6 +90,10 @@ public partial class MainPageViewModel : ObservableObject, INavigationAwareAsync
         };
 
         await _coffeeService.AddCoffeeAsync(coffee);
+        
+        // Show a random celebration message
+        var celebrationMessage = _coffeeCelebrations[_random.Next(_coffeeCelebrations.Length)];
+        await Shell.Current.DisplayAlert("Coffee Joy! ☕", celebrationMessage, "Thanks!");
         
         // Clear the entries
         Name = string.Empty;
@@ -121,7 +137,7 @@ public class CoffeeGroup : ObservableCollection<Coffee>
     public string DisplayDate { get; }
     public double TotalOunces { get; }
 
-    public CoffeeGroup(DateTime date, ObservableCollection<Coffee> coffees) : base(coffees)
+    public CoffeeGroup(DateTime date, List<Coffee> coffees) : base(coffees)
     {
         Date = date;
         DisplayDate = date.ToString("D");
