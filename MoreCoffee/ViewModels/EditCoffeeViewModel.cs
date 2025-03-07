@@ -1,14 +1,15 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Maui.Platform;
 using MoreCoffee.Models;
 using MoreCoffee.Services;
 
 namespace MoreCoffee.ViewModels;
 
 [QueryProperty(nameof(Coffee), "Coffee")]
-public partial class EditCoffeeViewModel : ObservableObject
+public partial class EditCoffeeViewModel(CoffeeService coffeeService) : ObservableObject
 {
-    private readonly CoffeeService coffeeService;
+    private readonly CoffeeService coffeeService = coffeeService;
     private string originalName = string.Empty;
     private double originalOunces;
     private DateTime originalDateAdded;
@@ -24,11 +25,6 @@ public partial class EditCoffeeViewModel : ObservableObject
             originalOunces = value.Ounces;
             originalDateAdded = value.DateAdded;
         }
-    }
-
-    public EditCoffeeViewModel(CoffeeService coffeeService)
-    {
-        this.coffeeService = coffeeService;
     }
 
     private bool HasCoffeeChanged()
@@ -49,8 +45,11 @@ public partial class EditCoffeeViewModel : ObservableObject
 
         if (Coffee.Ounces <= 0)
         {
-            // Notify the user about the invalid input
-            await Application.Current.MainPage.DisplayAlert("Validation Error", "Ounces must be greater than zero.", "OK");
+            var page = PageService.GetCurrentPage();
+            if (page != null)
+            {
+                await page.DisplayAlert("Validation Error", "Ounces must be greater than zero.", "OK");
+            }
             return;
         }
 
@@ -73,7 +72,11 @@ public partial class EditCoffeeViewModel : ObservableObject
         if (Coffee == null)
             return;
 
-        bool answer = await Application.Current.MainPage.DisplayAlert(
+        var page = PageService.GetCurrentPage();
+        if (page == null)
+            return;
+
+        bool answer = await page.DisplayAlert(
             "Delete Coffee",
             $"Are you sure you want to delete {Coffee.Name}?",
             "Yes", "No");
